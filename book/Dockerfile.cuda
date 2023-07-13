@@ -38,7 +38,8 @@ RUN mamba install --quiet --yes \
     'python=3' "jupyter_server>=2.0.0" \
     'notebook' 'jupyterhub' 'jupyterlab' \
     'jupyter-server-proxy' 'jupyterlab-git' 'jupyterlab-pullrequests' \
-    'jupyterlab-lsp' 'python-lsp-server' 'r-languageserver' && \
+    'jupyterlab-lsp' 'python-lsp-server' 'r-languageserver' \
+    'ipywidgets' 'jupyterlab_vim' && \
     jupyter notebook --generate-config && \
     mamba clean --all -f -y && \
     npm cache clean --force && \
