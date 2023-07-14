@@ -3,10 +3,12 @@
 
 # Ubuntu 22.04 (jammy)
 # https://hub.docker.com/_/ubuntu/tags?page=1&name=jammy
-ARG CUDA=114
-ARG FLAVOR=runtime
 ARG USERNAME=nguyentritai2906
-FROM ${USERNAME}/micromamba:cu${CUDA}-${FLAVOR}
+ARG MAMBA_VERSION=latest
+ARG CUDA=121
+ARG FLAVOR=runtime
+ARG UBUNTU_VERSION=22.04
+FROM ${USERNAME}/micromamba:${MAMBA_VERSION}-cu${CUDA}-${FLAVOR}-ubuntu${UBUNTU_VERSION}
 
 ARG NB_USER="jovyan"
 # UID 1000 is already associated with the "mambauser" in the base image

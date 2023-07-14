@@ -8,12 +8,14 @@ on:
 
 jobs:
   # Build image
-  build-cuda:
+  build-base-image:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        cuda: [112, 113, 114, 116, 118, 120]
+        mamba: [latest, 1.4.0]
+        cuda: [120, 121]
         flavor: [runtime, devel]
+        ubuntu: [20.04, 22.04]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -32,19 +34,45 @@ jobs:
           push: true
           context: "./base"
           file: "./base/Dockerfile.cuda"
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mambabase:cu${{ matrix.cuda }}-${{ matrix.flavor }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mambabase:${{ matrix.mamba }}-cu${{ matrix.cuda }}-${{ matrix.flavor }}-ubuntu${{ matrix.ubuntu }}
           build-args: |
+            MAMBA=${{ matrix.mamba }}
             CUDA=${{ matrix.cuda }}
             FLAVOR=${{ matrix.flavor }}
             USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-      - name: Build image
+            UBUNTU=${{ matrix.ubuntu }}
+
+  build-book-image:
+    needs: build-base-image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mamba: [latest, 1.4.0]
+        cuda: [120, 121]
+        flavor: [runtime, devel]
+        ubuntu: [20.04, 22.04]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build book image
         uses: docker/build-push-action@v3
         with:
           push: true
           context: "./book"
           file: "./book/Dockerfile.cuda"
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mambabook:cu${{ matrix.cuda }}-${{ matrix.flavor }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mambabook:${{ matrix.mamba }}-cu${{ matrix.cuda }}-${{ matrix.flavor }}-ubuntu${{ matrix.ubuntu }}
           build-args: |
+            MAMBA=${{ matrix.mamba }}
             CUDA=${{ matrix.cuda }}
             FLAVOR=${{ matrix.flavor }}
             USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            UBUNTU=${{ matrix.ubuntu }}
