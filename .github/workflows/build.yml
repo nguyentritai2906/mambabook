@@ -13,9 +13,10 @@ jobs:
     strategy:
       matrix:
         mamba: [latest, 1.4.0]
-        cuda: [120, 121]
+        cuda: [120, 121, 118]
         flavor: [runtime, devel]
         ubuntu: [20.04, 22.04]
+      fail-fast: true
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -48,9 +49,10 @@ jobs:
     strategy:
       matrix:
         mamba: [latest, 1.4.0]
-        cuda: [120, 121]
+        cuda: [120, 121, 118]
         flavor: [runtime, devel]
         ubuntu: [20.04, 22.04]
+      fail-fast: true
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
